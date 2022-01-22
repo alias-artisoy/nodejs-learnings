@@ -15,7 +15,7 @@ itemsRouter.get('/', async (req: Request, res: Response) => {
 });
 
 itemsRouter.get('/:id', async (req: Request, res: Response) => {
-    const id: number = parseInt(req.params.id);
+    const id: string = req.params.id.toString();
     try {
         const item: Item = await ItemService.find(id);
 
@@ -29,7 +29,7 @@ itemsRouter.post('/', async (req: Request, res: Response) => {
     try {
         const item: BaseItem = req.body;
 
-        const newItem = ItemService.create(item);
+        const newItem = await ItemService.create(item);
 
         res.status(201).json(newItem);
     } catch (e: any) {
@@ -38,7 +38,7 @@ itemsRouter.post('/', async (req: Request, res: Response) => {
 });
 
 itemsRouter.put('/:id', async (req: Request, res: Response) => {
-    const id: number = parseInt(req.params.id);
+    const id: string = req.params.id.toString();
     try {
         const item: Item = req.body;
 
@@ -59,10 +59,13 @@ itemsRouter.put('/:id', async (req: Request, res: Response) => {
 });
 
 itemsRouter.delete('/:id', async (req: Request, res: Response) => {
-    const id: number = parseInt(req.params.id);
+    const id: string = req.params.id.toString();
     try {
         const existingItem: Item = await ItemService.find(id);
-        await ItemService.remove(id);
+
+        if(existingItem){
+            await ItemService.remove(id);
+        }
 
         res.status(204).json();
     } catch (e: any) {

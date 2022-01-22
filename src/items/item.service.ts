@@ -1,44 +1,32 @@
 import { BaseItem, Item } from "./item.interface";
-import { Items } from "./items.interface";
-import fs from "fs";
+import itemSchema from "./item-schema";
 
-let rawData = fs.readFileSync(`${__dirname}/items.json`).toString();
-let items: Items = JSON.parse(rawData);
+export const findAll = async (): Promise<Item[]> => {
+    return await itemSchema.find();
+};
 
-export const findAll = async (): Promise<Item[]> => Object.values(items);
-
-export const find = async (id: number): Promise<Item> => {
-    return items[id];
+export const find = async (id: string): Promise<Item> => {
+    return await itemSchema.findOne({
+        "_id": id
+    });
 }
 
 export const create = async (newData: BaseItem): Promise<Item> => {
-    const id: number = new Date().valueOf();
-
-    items[id] = {
-        id,
-        ...newData
-    };
-
-    return items[id];
+    return await itemSchema.create(newData);
 }
 
-export const update = async(id: number, updateData: BaseItem): Promise<Item | null> => {
-    const item = await find(id);
-
-    if(!item) return null;
-
-    items[id] = {
-        id,
-        ...updateData
+export const update = async(id: string, updateData: BaseItem): Promise<Item | null> => {
+    const query = {
+        "_id": id
     };
-
-    return items[id];
+    return await itemSchema.findOneAndUpdate(query, updateData, {
+        returnOriginal: false
+    });
 }
 
-export const remove = async(id: number): Promise<void | null> => {
-    const item = await find(id);
-
-    if(!item) return null;
-
-    delete items[id];
+export const remove = async(id: string): Promise<void | null> => {
+    const query = {
+        "_id": id
+    };
+    await itemSchema.deleteOne(query);
 }

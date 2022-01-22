@@ -1,4 +1,4 @@
-version: "3.9"
+version: "3.3"
 services:
   node-server:
     container_name: node-server
@@ -10,13 +10,28 @@ services:
       - /usr/local/app/node_modules/
     ports:
       - '8080:8080'
+    depends_on:
+      - mongodb
+    environment:
+      WAIT_HOSTS: mongodb:27017
+    networks:
+      - node-network
   mongodb:
     container_name: mongodb
-    image: mongo:latest
+    image: mongo:5.0
     ports:
-      - "27017:27017"
+      - 27017:27017
     volumes:
       - data-volume:/data/db
+    environment:
+      - MONGO_INITDB_ROOT_USERNAME=root
+      - MONGO_INITDB_ROOT_PASSWORD=admin
+    networks:
+      - node-network
 
 volumes:
   data-volume:
+
+networks:
+  node-network:
+    driver: bridge

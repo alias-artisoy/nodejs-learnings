@@ -8,7 +8,7 @@ RUN npm install && npm cache clean --force
 
 COPY ../ .
 
-ARG DEFAULT_PORT=80
+ARG DEFAULT_PORT=8080
 
 ENV PORT $DEFAULT_PORT
 
